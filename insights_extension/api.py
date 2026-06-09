@@ -1,34 +1,33 @@
-# insights_sidebar/api.py
+# insights_extension/api.py
 
-import frappe
+import orbit7
 
-
-@frappe.whitelist()
+@orbit7.whitelist()
 def get_workspace_dashboards(workspace):
     """
-    Return Insights Sidebar items for a specific workspace,
+    Return Insights Extension items for a specific workspace,
     filtered by the current user's roles, sorted by portion (ascending).
 
     Security:
-        - frappe.has_permission check at entry
+        - orbit7.has_permission check at entry
         - Role intersection done server-side (never exposed to client)
     """
-    print(f"[Insights API] get_workspace_dashboards | workspace={workspace} | user={frappe.session.user}")
+    print(f"[Insights API] get_workspace_dashboards | workspace={workspace} | user={orbit7.session.user}")
 
-    if not frappe.has_permission("Insights Sidebar", "read"):
-        print(f"[Insights API] PERMISSION DENIED for user: {frappe.session.user}")
-        frappe.throw("Not permitted", frappe.PermissionError)
+    if not orbit7.has_permission("Insights Extension", "read"):
+        print(f"[Insights API] PERMISSION DENIED for user: {orbit7.session.user}")
+        orbit7.throw("Not permitted", orbit7.PermissionError)
 
-    user_roles = set(frappe.get_roles(frappe.session.user))
+    user_roles = set(orbit7.get_roles(orbit7.session.user))
     print(f"[Insights API] User roles: {user_roles}")
 
     cache_key = f"insights_sidebar_ws_{workspace}"
-    all_configs = frappe.cache().get_value(cache_key)
+    all_configs = orbit7.cache().get_value(cache_key)
 
     if all_configs is None:
         print(f"[Insights API] Cache MISS for key: {cache_key} — querying DB")
 
-        docs = frappe.get_all(
+        docs = orbit7.get_all(
             "Insights Sidebar",
             filters={"workspace": workspace},
             fields=["name", "label", "dashboard", "portion"],
@@ -38,7 +37,7 @@ def get_workspace_dashboards(workspace):
 
         all_configs = []
         for d in docs:
-            roles_assigned = frappe.get_all(
+            roles_assigned = orbit7.get_all(
                 "Has Role",
                 filters={"parent": d.name, "parenttype": "Insights Sidebar"},
                 fields=["role"]
@@ -50,7 +49,7 @@ def get_workspace_dashboards(workspace):
                 "allowed_roles": [r.role for r in roles_assigned if r.role]
             })
 
-        frappe.cache().set_value(cache_key, all_configs, expires_in_sec=3600)
+        orbit7.cache().set_value(cache_key, all_configs, expires_in_sec=3600)
         print(f"[Insights API] Cached {len(all_configs)} config(s) under key: {cache_key}")
 
     else:
@@ -71,7 +70,7 @@ def get_workspace_dashboards(workspace):
                 "portion":   item["portion"],
             })
 
-    print(f"[Insights API] Returning {len(allowed)} item(s) to {frappe.session.user}")
+    print(f"[Insights API] Returning {len(allowed)} item(s) to {orbit7.session.user}")
     return allowed
 
 
@@ -79,8 +78,8 @@ def clear_sidebar_cache(workspace=None):
     """Clear cached config. Called from InsightsSidebar controller hooks."""
     if workspace:
         key = f"insights_sidebar_ws_{workspace}"
-        frappe.cache().delete_value(key)
+        orbit7.cache().delete_value(key)
         print(f"[Insights API] Cache cleared: {key}")
     else:
-        frappe.cache().delete_value("insights_sidebar_all_configs")
+        orbit7.cache().delete_value("insights_sidebar_all_configs")
         print("[Insights API] Global cache cleared.")

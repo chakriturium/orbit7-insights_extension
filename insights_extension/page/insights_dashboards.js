@@ -1,9 +1,8 @@
-// /workspace/development/frappe-bench/apps/insights_sidebar/insights_sidebar/insights_side_bar/page/insights_dashboards/insights_dashboards.js
 
-frappe.pages['insights-dashboards'] = frappe.pages['insights-dashboards'] || {};
+orbit7.pages['insights-dashboards'] = orbit7.pages['insights-dashboards'] || {};
 
-frappe.pages['insights-dashboards'].on_page_load = function(wrapper) {
-    let page = frappe.ui.make_app_page({
+orbit7.pages['insights-dashboards'].on_page_load = function(wrapper) {
+    let page = orbit7.ui.make_app_page({
         parent: wrapper,
         title: __('Insights Dashboards'),
         single_column: true
@@ -11,7 +10,7 @@ frappe.pages['insights-dashboards'].on_page_load = function(wrapper) {
 
     wrapper.page_instance = page;
 
-    frappe.dom.set_style(`
+    orbit7.dom.set_style(`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
         /* ── Root Layout ── */
@@ -699,7 +698,7 @@ frappe.pages['insights-dashboards'].on_page_load = function(wrapper) {
     `);
 
     // ── Fetch sidebar items ───────────────────────────────────────────────────
-    frappe.call({
+    orbit7.call({
         method: "insights_sidebar.api.get_sidebar_items",
         callback: function(r) {
             const $sidebar = $('#insights-custom-sidebar');
@@ -743,7 +742,7 @@ frappe.pages['insights-dashboards'].on_page_load = function(wrapper) {
             // ── Dashboard click ───────────────────────────────────────────
             $('.insights-nav-link').on('click', function(e) {
                 e.preventDefault();
-                frappe.set_route('insights-dashboards', $(this).attr('data-dashboard'));
+                orbit7.set_route('insights-dashboards', $(this).attr('data-dashboard'));
             });
 
             // ── Search / filter ───────────────────────────────────────────
@@ -763,7 +762,7 @@ frappe.pages['insights-dashboards'].on_page_load = function(wrapper) {
                 open_workspace_picker(dashboard, label, $(this));
             });
 
-            frappe.pages['insights-dashboards'].on_page_show(wrapper);
+            orbit7.pages['insights-dashboards'].on_page_show(wrapper);
         }
     });
 };
@@ -868,8 +867,8 @@ function open_workspace_picker(dashboard_name, dashboard_label, $pin_btn) {
     }
 
     // Fetch all workspaces the user can access
-    frappe.call({
-        method: 'frappe.client.get_list',
+    orbit7.call({
+        method: 'orbit7.client.get_list',
         args: {
             doctype: 'Workspace',
             fields:  ['name', 'title', 'icon'],
@@ -903,12 +902,12 @@ function open_workspace_picker(dashboard_name, dashboard_label, $pin_btn) {
         $btn.prop('disabled', true).text(__('Saving…'));
 
         // Fetch the full Workspace doc, add shortcut, then save
-        frappe.call({
-            method: 'frappe.client.get',
+        orbit7.call({
+            method: 'orbit7.client.get',
             args: { doctype: 'Workspace', name: selected_workspace.name },
             callback: function(r) {
                 if (!r.message) {
-                    frappe.msgprint(__('Could not load workspace. Please try again.'));
+                    orbit7.msgprint(__('Could not load workspace. Please try again.'));
                     $btn.prop('disabled', false).text(__('Add Shortcut'));
                     return;
                 }
@@ -921,7 +920,7 @@ function open_workspace_picker(dashboard_name, dashboard_label, $pin_btn) {
                 );
 
                 if (already_exists) {
-                    frappe.show_alert({
+                    orbit7.show_alert({
                         message: __('This dashboard is already pinned to {0}', [selected_workspace.title]),
                         indicator: 'orange'
                     }, 4);
@@ -939,8 +938,8 @@ function open_workspace_picker(dashboard_name, dashboard_label, $pin_btn) {
                     icon:    'bar-chart'
                 });
 
-                frappe.call({
-                    method: 'frappe.client.save',
+                orbit7.call({
+                    method: 'orbit7.client.save',
                     args:   { doc: doc },
                     callback: function(save_r) {
                         if (save_r.message) {
@@ -948,14 +947,14 @@ function open_workspace_picker(dashboard_name, dashboard_label, $pin_btn) {
                             $pin_btn.addClass('pinned')
                                     .attr('title', __('Pinned to ') + selected_workspace.title);
 
-                            frappe.show_alert({
+                            orbit7.show_alert({
                                 message:   __('"{0}" added to {1}', [dashboard_label, selected_workspace.title]),
                                 indicator: 'green'
                             }, 5);
 
                             close_dialog();
                         } else {
-                            frappe.msgprint(__('Failed to save. Please try again.'));
+                            orbit7.msgprint(__('Failed to save. Please try again.'));
                             $btn.prop('disabled', false).text(__('Add Shortcut'));
                         }
                     }
@@ -966,10 +965,10 @@ function open_workspace_picker(dashboard_name, dashboard_label, $pin_btn) {
 }
 
 // ── on_page_show ──────────────────────────────────────────────────────────────
-frappe.pages['insights-dashboards'].on_page_show = function(wrapper) {
+orbit7.pages['insights-dashboards'].on_page_show = function(wrapper) {
     if (!wrapper.page_instance) return;
 
-    const route          = frappe.get_route();
+    const route          = orbit7.get_route();
     const dashboard_name = route[1];
 
     $('.insights-nav-link').removeClass('active');
@@ -1009,12 +1008,12 @@ frappe.pages['insights-dashboards'].on_page_show = function(wrapper) {
 
             // Layer 1 — persistent CSS
             const style = iframeDoc.createElement('style');
-            style.id    = 'frappeInsightsEmbedHide';
+            style.id    = 'orbit7InsightsEmbedHide';
             style.textContent = `
                 aside, nav, header,
                 [class*="sidebar"], [class*="Sidebar"],
                 .w-48, .w-52, .w-56, .w-60, .w-64, .w-72,
-                .frappe-ui-sidebar, .layout-side-section,
+                .orbit7-ui-sidebar, .layout-side-section,
                 [data-v-app] > div > aside,
                 [data-v-app] > div > nav {
                     display: none !important;
@@ -1044,7 +1043,7 @@ frappe.pages['insights-dashboards'].on_page_show = function(wrapper) {
                 (function() {
                     var SEL = ['aside','nav','header','[class*="sidebar"]','[class*="Sidebar"]',
                                '.w-48','.w-52','.w-56','.w-60','.w-64','.w-72',
-                               '.frappe-ui-sidebar','.layout-side-section'];
+                               '.orbit7-ui-sidebar','.layout-side-section'];
                     function hideAll() {
                         SEL.forEach(function(s) {
                             try {

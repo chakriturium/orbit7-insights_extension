@@ -145,15 +145,15 @@
 
 
 
-    frappe.after_ajax(() => {
+    orbit7.after_ajax(() => {
         setTimeout(() => {
             console.log("[Insights] after_ajax fired");
             on_route_change();
         }, 1200);
     });
 
-    if (frappe.router && frappe.router.on) {
-        frappe.router.on('change', () => {
+    if (orbit7.router && orbit7.router.on) {
+        orbit7.router.on('change', () => {
             setTimeout(() => {
                 console.log("[Insights] router change fired");
                 on_route_change();
@@ -164,7 +164,7 @@
 
 
     function on_route_change() {
-        const route = frappe.get_route();
+        const route = orbit7.get_route();
         console.log("[Insights] Route:", route);
 
         const on_workspace = route && route[0] === 'Workspaces' && route[1];
@@ -211,7 +211,7 @@
 
             console.log("[Insights] Fetching dashboards for workspace:", workspace);
 
-            const r = await frappe.call({
+            const r = await orbit7.call({
                 method: "insights_sidebar.api.get_workspace_dashboards",
                 args: { workspace }
             });

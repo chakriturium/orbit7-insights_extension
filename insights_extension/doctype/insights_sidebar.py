@@ -1,6 +1,6 @@
-import frappe
-from frappe.model.document import Document
-from insights_sidebar.api import clear_sidebar_cache
+import orbit7
+from orbit7.model.document import Document
+from insights_extension.api import clear_sidebar_cache
 
 class InsightsSidebar(Document):
     def on_update(self):
