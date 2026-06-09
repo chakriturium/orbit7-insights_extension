@@ -1,0 +1,10 @@
+import frappe
+from frappe.model.document import Document
+from insights_sidebar.api import clear_sidebar_cache
+
+class InsightsSidebar(Document):
+    def on_update(self):
+        clear_sidebar_cache(self.workspace)
+
+    def on_trash(self):
+        clear_sidebar_cache(self.workspace)

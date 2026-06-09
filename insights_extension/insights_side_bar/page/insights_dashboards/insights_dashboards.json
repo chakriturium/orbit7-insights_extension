@@ -1,0 +1,26 @@
+{
+ "content": null,
+ "creation": "2026-05-12 15:10:27.285275",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2026-05-19 21:29:16.834365",
+ "modified_by": "Administrator",
+ "module": "Insights side bar",
+ "name": "insights-dashboards",
+ "owner": "Administrator",
+ "page_name": "insights-dashboards",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Accounts Manager"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 1,
+ "title": "insights-dashboards"
+}
