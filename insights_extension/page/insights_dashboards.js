@@ -699,7 +699,7 @@ orbit7.pages['insights-dashboards'].on_page_load = function(wrapper) {
 
     // ── Fetch sidebar items ───────────────────────────────────────────────────
     orbit7.call({
-        method: "insights_sidebar.api.get_sidebar_items",
+        method: "insights_extension.api.get_sidebar_items",
         callback: function(r) {
             const $sidebar = $('#insights-custom-sidebar');
             $sidebar.empty();

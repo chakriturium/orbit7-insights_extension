@@ -212,7 +212,7 @@
             console.log("[Insights] Fetching dashboards for workspace:", workspace);
 
             const r = await orbit7.call({
-                method: "insights_sidebar.api.get_workspace_dashboards",
+                method: "insights_extension.api.get_workspace_dashboards",
                 args: { workspace }
             });
 
