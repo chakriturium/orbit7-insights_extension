@@ -16,8 +16,11 @@ app_license = "mit"
 # ]
 
 app_include_js = [
-    "assets/insights_extension/js/workspace_insights.js"
+    "assets/insights_extension/js/workspace_insights.js",
+    "/assets/insights_extension/js/insights_patch.js"
 ]
+
+
 # required_apps = []
 
 # Each item in the list will be shown as an app in the apps page

@@ -3,19 +3,57 @@
 import orbit7
 
 @orbit7.whitelist()
+def check_dashboard_access(dashboard):
+    """
+    Check if the current user has access to a specific dashboard
+    based on the roles configured in the Insights Sidebar doctype.
+    """
+    if orbit7.session.user == "Guest":
+        return False
+    if orbit7.session.user == "Administrator":
+        return True
+
+    user_roles = set(orbit7.get_roles(orbit7.session.user))
+
+    configs = orbit7.get_all(
+        "Insights Sidebar",
+        filters={"dashboard": dashboard},
+        fields=["name"]
+    )
+
+    if not configs:
+        return False
+
+    for c in configs:
+        roles_assigned = orbit7.get_all(
+            "Has Role",
+            filters={"parent": c.name, "parenttype": "Insights Sidebar"},
+            fields=["role"]
+        )
+        allowed_roles = [r.role for r in roles_assigned if r.role]
+
+        if not allowed_roles:
+            return True
+
+        if user_roles.intersection(allowed_roles):
+            return True
+
+    return False
+
+@orbit7.whitelist()
 def get_workspace_dashboards(workspace):
     """
     Return Insights Extension items for a specific workspace,
     filtered by the current user's roles, sorted by portion (ascending).
 
     Security:
-        - orbit7.has_permission check at entry
+        - Guest check at entry
         - Role intersection done server-side (never exposed to client)
     """
     print(f"[Insights API] get_workspace_dashboards | workspace={workspace} | user={orbit7.session.user}")
 
-    if not orbit7.has_permission("Insights Extension", "read"):
-        print(f"[Insights API] PERMISSION DENIED for user: {orbit7.session.user}")
+    if orbit7.session.user == "Guest":
+        print(f"[Insights API] PERMISSION DENIED for user: Guest")
         orbit7.throw("Not permitted", orbit7.PermissionError)
 
     user_roles = set(orbit7.get_roles(orbit7.session.user))
@@ -83,3 +121,18 @@ def clear_sidebar_cache(workspace=None):
     else:
         orbit7.cache().delete_value("insights_sidebar_all_configs")
         print("[Insights API] Global cache cleared.")
+
+@orbit7.whitelist()
+def get_dashboard_workspace(dashboard):
+    """
+    Get the workspace name configured for a specific dashboard.
+    """
+    if orbit7.session.user == "Guest":
+        return None
+    configs = orbit7.get_all(
+        "Insights Sidebar",
+        filters={"dashboard": dashboard},
+        fields=["workspace"],
+        limit=1
+    )
+    return configs[0].workspace if configs else None

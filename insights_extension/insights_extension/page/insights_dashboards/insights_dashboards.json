@@ -6,18 +6,11 @@
  "idx": 0,
  "modified": "2026-05-19 21:29:16.834365",
  "modified_by": "Administrator",
- "module": "Insights side bar",
+ "module": "Insights Extension",
  "name": "insights-dashboards",
  "owner": "Administrator",
  "page_name": "insights-dashboards",
- "roles": [
-  {
-   "role": "System Manager"
-  },
-  {
-   "role": "Accounts Manager"
-  }
- ],
+ "roles": [],
  "script": null,
  "standard": "Yes",
  "style": null,
